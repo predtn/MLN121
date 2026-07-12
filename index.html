@@ -7,7 +7,7 @@
   <meta name="description" content="Trang timeline tìm hiểu về các nguyên lý cơ bản của Kinh tế Hàng hóa trong Triết học Mác - Lênin.">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="intro-state">
 
   <!-- Theme Toggle Button -->
   <button class="theme-toggle-btn" id="theme-toggle" aria-label="Đổi chế độ sáng/tối">
@@ -34,6 +34,10 @@
     <p class="header-eyebrow">Kinh tế Chính trị Mác – Lênin</p>
     <h1>Hành Trình Lịch Sử</h1>
     <p class="subtitle">Từ Cách mạng Công nghiệp 1760 đến Kinh tế thị trường định hướng XHCN — khám phá hành trình hình thành và phát triển của học thuyết Kinh tế Chính trị Mác – Lênin qua các mốc thời gian quan trọng.</p>
+    <button class="explore-btn" id="explore-btn" type="button">
+      Khám phá hành trình
+      <span aria-hidden="true">→</span>
+    </button>
   </header>
 
   <!-- Timeline Section -->
@@ -47,6 +51,73 @@
     <!-- Timeline Event Nodes (will be populated dynamically by app.js) -->
     <div id="timeline-items-container"></div>
   </main>
+
+  <!-- Historical Figures Section -->
+  <section class="historical-figures-section" aria-labelledby="historical-figures-title">
+    <div class="section-heading">
+      <p class="section-eyebrow">Những người đặt nền móng</p>
+      <h2 id="historical-figures-title">Nhân vật lịch sử</h2>
+      <p class="section-intro">Bốn nhân vật có ảnh hưởng sâu sắc đến quá trình hình thành, phát triển và vận dụng tư tưởng kinh tế chính trị Mác – Lênin trong lịch sử hiện đại.</p>
+    </div>
+
+    <div class="figures-grid">
+      <article class="figure-card figure-marx" data-figure-id="marx" tabindex="0" role="button" aria-label="Xem hồ sơ Karl Marx">
+        <div class="figure-portrait">
+          <img src="marx_transparent.png" alt="Karl Marx">
+        </div>
+        <div class="figure-content">
+          <p class="figure-period">1818 — 1883</p>
+          <h3>Karl Marx</h3>
+          <p class="figure-role">Nhà triết học và kinh tế chính trị</p>
+          <p class="figure-description">Người đặt nền móng cho chủ nghĩa xã hội khoa học và hệ thống lý luận phê phán nền sản xuất tư bản chủ nghĩa.</p>
+        </div>
+      </article>
+
+      <article class="figure-card figure-engels" data-figure-id="engels" tabindex="0" role="button" aria-label="Xem hồ sơ Friedrich Engels">
+        <div class="figure-portrait">
+          <img src="engels_transparent.png" alt="Friedrich Engels">
+        </div>
+        <div class="figure-content">
+          <p class="figure-period">1820 — 1895</p>
+          <h3>Friedrich Engels</h3>
+          <p class="figure-role">Nhà tư tưởng và người đồng hành của Marx</p>
+          <p class="figure-description">Đồng sáng lập nền tảng lý luận Marxist, đồng thời góp phần biên tập và phát triển di sản khoa học của Marx.</p>
+        </div>
+      </article>
+
+      <article class="figure-card figure-lenin" data-figure-id="lenin" tabindex="0" role="button" aria-label="Xem hồ sơ Vladimir Lenin">
+        <div class="figure-portrait">
+          <img src="lenin_transparent.png" alt="Vladimir Lenin">
+        </div>
+        <div class="figure-content">
+          <p class="figure-period">1870 — 1924</p>
+          <h3>Vladimir Lenin</h3>
+          <p class="figure-role">Nhà lý luận và lãnh tụ cách mạng</p>
+          <p class="figure-description">Phát triển sáng tạo chủ nghĩa Marx trong thời đại đế quốc chủ nghĩa và vận dụng vào thực tiễn cách mạng Nga.</p>
+        </div>
+      </article>
+
+      <article class="figure-card figure-ho-chi-minh" data-figure-id="ho-chi-minh" tabindex="0" role="button" aria-label="Xem hồ sơ Chủ tịch Hồ Chí Minh">
+        <div class="figure-portrait">
+          <img src="ho-chi-minh_transparent.png" alt="Chủ tịch Hồ Chí Minh">
+        </div>
+        <div class="figure-content">
+          <p class="figure-period">1890 — 1969</p>
+          <h3>Chủ tịch Hồ Chí Minh</h3>
+          <p class="figure-role">Lãnh tụ cách mạng Việt Nam</p>
+          <p class="figure-description">Vận dụng và phát triển sáng tạo chủ nghĩa Marx – Lenin vào sự nghiệp giải phóng dân tộc và xây dựng đất nước.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Historical Figure Detail Modal -->
+  <div class="figure-detail-modal" id="figure-detail-modal" aria-hidden="true">
+    <div class="figure-detail-content" role="dialog" aria-modal="true" aria-labelledby="figure-detail-title">
+      <button class="figure-detail-close" type="button" aria-label="Đóng hồ sơ">&times;</button>
+      <div class="figure-detail-body" id="figure-detail-body"></div>
+    </div>
+  </div>
 
   <!-- Fullscreen Details Overlay Modal -->
   <div class="detail-modal" id="detail-modal">
@@ -125,8 +196,14 @@
   <div class="floating-sticker marx-sticker">
     <img src="marx_transparent.png" alt="Karl Marx Sticker">
   </div>
+  <div class="floating-sticker engels-sticker">
+    <img src="engels_transparent.png" alt="Friedrich Engels Sticker">
+  </div>
   <div class="floating-sticker lenin-sticker">
     <img src="lenin_transparent.png" alt="Vladimir Lenin Sticker">
+  </div>
+  <div class="floating-sticker ho-chi-minh-sticker">
+    <img src="ho-chi-minh_transparent.png" alt="Chủ tịch Hồ Chí Minh Sticker">
   </div>
 
   <!-- Bottom Scroll Progress Bar -->

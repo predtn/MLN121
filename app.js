@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const timelineContainer = document.getElementById("timeline-items-container");
   const modal = document.getElementById("detail-modal");
   const modalContent = document.getElementById("modal-content");
+  const figureModal = document.getElementById("figure-detail-modal");
   
   // -------- Study Cart (State & Drag & Drop) --------
   const studyList = new Set(JSON.parse(localStorage.getItem("studyList") || "[]"));
@@ -230,6 +231,174 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = ""; // Enable background scrolling
   }
 
+  const historicalFigures = {
+    marx: {
+      name: "Karl Marx",
+      period: "1818 — 1883",
+      role: "Nhà triết học và kinh tế chính trị",
+      image: "marx_transparent.png",
+      figureClass: "figure-marx",
+      summary: "Karl Marx đặt nền móng cho việc phân tích có hệ thống về hàng hoá, lao động, giá trị, tư bản và giá trị thặng dư. Tư tưởng của ông trở thành cơ sở lý luận quan trọng để nghiên cứu các quy luật vận động của xã hội tư bản chủ nghĩa.",
+      stats: [
+        ["Sinh — mất", "1818 — 1883"],
+        ["Quê quán", "Trier, Phổ (nay thuộc Đức)"],
+        ["Lĩnh vực", "Triết học, kinh tế chính trị, lịch sử xã hội"],
+        ["Tác phẩm tiêu biểu", "Tư bản; Tuyên ngôn của Đảng Cộng sản; Hệ tư tưởng Đức"]
+      ],
+      milestones: [
+        ["1818", "Ra đời tại Trier", "Hình thành bối cảnh học tập và trí thức ban đầu của Marx tại châu Âu thế kỷ XIX."],
+        ["1844", "Gặp gỡ và hợp tác với Engels", "Mở đầu mối quan hệ lý luận và hoạt động cách mạng có ảnh hưởng lớn đến phong trào công nhân."],
+        ["1848", "Tuyên ngôn của Đảng Cộng sản", "Trình bày quan điểm về đấu tranh giai cấp, sứ mệnh lịch sử của giai cấp công nhân và sự phát triển xã hội."],
+        ["1867", "Tập I bộ Tư bản xuất bản", "Phân tích hàng hoá, tiền tệ, sức lao động và cơ chế tạo ra giá trị thặng dư."],
+        ["1883", "Qua đời tại London", "Để lại một di sản lý luận lớn, tiếp tục được Engels và các thế hệ sau nghiên cứu, phát triển."]
+      ]
+    },
+    engels: {
+      name: "Friedrich Engels",
+      period: "1820 — 1895",
+      role: "Nhà tư tưởng và người đồng hành của Marx",
+      image: "engels_transparent.png",
+      figureClass: "figure-engels",
+      summary: "Friedrich Engels là cộng sự lý luận và người bạn đồng hành quan trọng nhất của Marx. Ông vừa đóng góp trực tiếp vào sự hình thành chủ nghĩa Marx, vừa bảo vệ, biên tập và phát triển nhiều công trình của Marx sau khi Marx qua đời.",
+      stats: [
+        ["Sinh — mất", "1820 — 1895"],
+        ["Quê quán", "Barmen, Phổ (nay thuộc Đức)"],
+        ["Lĩnh vực", "Triết học, kinh tế chính trị, lý luận phong trào công nhân"],
+        ["Tác phẩm tiêu biểu", "Tình cảnh giai cấp công nhân Anh; Chống Đuy-rinh; Biện chứng của tự nhiên"]
+      ],
+      milestones: [
+        ["1820", "Ra đời tại Barmen", "Lớn lên trong bối cảnh công nghiệp hoá và sớm quan sát những biến đổi trong đời sống công nhân."],
+        ["1844", "Bắt đầu hợp tác sâu sắc với Marx", "Cùng xây dựng nền tảng lý luận duy vật lịch sử và phê phán xã hội tư bản."],
+        ["1845", "Tình cảnh giai cấp công nhân ở Anh", "Cung cấp một khảo sát quan trọng về điều kiện sống, lao động và những mâu thuẫn xã hội trong công nghiệp hoá."],
+        ["1848", "Cùng Marx viết Tuyên ngôn", "Góp phần khái quát mục tiêu, phương pháp và vai trò lịch sử của phong trào cộng sản."],
+        ["1883 — 1894", "Biên tập các tập II và III bộ Tư bản", "Hệ thống hoá và công bố các bản thảo còn dang dở, giúp hoàn thiện di sản kinh tế chính trị của Marx."]
+      ]
+    },
+    lenin: {
+      name: "Vladimir Lenin",
+      period: "1870 — 1924",
+      role: "Nhà lý luận và lãnh tụ cách mạng",
+      image: "lenin_transparent.png",
+      figureClass: "figure-lenin",
+      summary: "Lenin phát triển chủ nghĩa Marx trong bối cảnh chủ nghĩa tư bản chuyển sang giai đoạn độc quyền và cạnh tranh giữa các đế quốc. Ông kết hợp nghiên cứu lý luận với tổ chức chính đảng và vận dụng sáng tạo vào cách mạng Nga.",
+      stats: [
+        ["Sinh — mất", "1870 — 1924"],
+        ["Quê quán", "Simbirsk, Đế quốc Nga"],
+        ["Lĩnh vực", "Lý luận cách mạng, nhà nước, chủ nghĩa đế quốc, kinh tế quá độ"],
+        ["Tác phẩm tiêu biểu", "Làm gì?; Nhà nước và cách mạng; Chủ nghĩa đế quốc, giai đoạn tột cùng của chủ nghĩa tư bản"]
+      ],
+      milestones: [
+        ["1870", "Ra đời tại Simbirsk", "Hình thành trong bối cảnh nước Nga tồn tại nhiều mâu thuẫn giữa chế độ chuyên chế, nông dân và công nhân."],
+        ["1902", "Làm gì? được xuất bản", "Trình bày quan điểm về vai trò của tổ chức và chính đảng cách mạng trong phong trào công nhân."],
+        ["1917", "Lãnh đạo Cách mạng Tháng Mười", "Đưa chính quyền về tay các Xô viết và mở ra thử nghiệm xây dựng nhà nước xã hội chủ nghĩa."],
+        ["1921", "Đề xướng Chính sách Kinh tế mới", "Vận dụng linh hoạt quan hệ hàng hoá — tiền tệ để khôi phục sản xuất sau chiến tranh và nội chiến."],
+        ["1924", "Qua đời", "Để lại những đóng góp quan trọng cho lý luận về chủ nghĩa đế quốc, nhà nước và thời kỳ quá độ."]
+      ]
+    },
+    "ho-chi-minh": {
+      name: "Chủ tịch Hồ Chí Minh",
+      period: "1890 — 1969",
+      role: "Lãnh tụ cách mạng Việt Nam",
+      image: "ho-chi-minh_transparent.png",
+      figureClass: "figure-ho-chi-minh",
+      summary: "Chủ tịch Hồ Chí Minh tiếp thu và vận dụng sáng tạo chủ nghĩa Marx — Lenin vào điều kiện cụ thể của Việt Nam. Người kết hợp mục tiêu độc lập dân tộc với định hướng xã hội chủ nghĩa, đồng thời nhấn mạnh vai trò của nhân dân, đoàn kết và đạo đức cách mạng.",
+      stats: [
+        ["Sinh — mất", "1890 — 1969"],
+        ["Quê quán", "Kim Liên, Nam Đàn, Nghệ An"],
+        ["Lĩnh vực", "Tư tưởng, cách mạng giải phóng dân tộc, xây dựng nhà nước"],
+        ["Di sản tiêu biểu", "Tuyên ngôn Độc lập; Đường Kách mệnh; tư tưởng về độc lập dân tộc gắn liền với chủ nghĩa xã hội"]
+      ],
+      milestones: [
+        ["1890", "Ra đời tại Kim Liên", "Hình thành nền tảng văn hoá, truyền thống yêu nước và ý thức về vận mệnh dân tộc."],
+        ["1911", "Ra đi tìm đường cứu nước", "Bắt đầu hành trình khảo nghiệm các con đường giải phóng dân tộc và tiếp cận những tư tưởng tiến bộ."],
+        ["1930", "Thành lập Đảng Cộng sản Việt Nam", "Góp phần thống nhất các tổ chức cộng sản và xác lập đường lối cách mạng Việt Nam."],
+        ["1945", "Đọc Tuyên ngôn Độc lập", "Khai sinh nước Việt Nam Dân chủ Cộng hoà và khẳng định quyền độc lập, tự do của dân tộc Việt Nam."],
+        ["1969", "Qua đời tại Hà Nội", "Để lại di sản tư tưởng, đạo đức và phong cách có ảnh hưởng sâu rộng đối với lịch sử Việt Nam."]
+      ]
+    }
+  };
+
+  function openFigureModal(id) {
+    const figure = historicalFigures[id];
+    if (!figure || !figureModal) return;
+
+    const figureBody = figureModal.querySelector(".figure-detail-body");
+    const statsRows = figure.stats.map(([label, value]) => `
+      <tr><th scope="row">${label}</th><td>${value}</td></tr>
+    `).join("");
+    const milestoneRows = figure.milestones.map(([period, title, detail]) => `
+      <tr><td>${period}</td><td><strong>${title}</strong>${detail}</td></tr>
+    `).join("");
+
+    figureBody.innerHTML = `
+      <div class="figure-detail-header">
+        <div class="figure-detail-portrait ${figure.figureClass}">
+          <img src="${figure.image}" alt="${figure.name}">
+        </div>
+        <div>
+          <p class="figure-detail-kicker">Hồ sơ nhân vật · ${figure.period}</p>
+          <h2 class="figure-detail-title" id="figure-detail-title">${figure.name}</h2>
+          <p class="figure-detail-role">${figure.role}</p>
+          <p class="figure-detail-summary">${figure.summary}</p>
+        </div>
+      </div>
+
+      <h3 class="figure-detail-section-title">Thông tin tổng quan</h3>
+      <div class="figure-detail-table-wrap">
+        <table class="figure-stats-table">
+          <tbody>${statsRows}</tbody>
+        </table>
+      </div>
+
+      <h3 class="figure-detail-section-title">Các mốc sự kiện đáng chú ý</h3>
+      <div class="figure-detail-table-wrap">
+        <table class="figure-milestones-table">
+          <thead><tr><th scope="col">Thời gian</th><th scope="col">Sự kiện và ý nghĩa</th></tr></thead>
+          <tbody>${milestoneRows}</tbody>
+        </table>
+      </div>
+
+      <h3 class="figure-detail-section-title">Tóm tắt trọng điểm</h3>
+      <p class="figure-detail-summary">${figure.summary}</p>
+    `;
+
+    figureModal.classList.add("open");
+    figureModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeFigureModal() {
+    if (!figureModal) return;
+    figureModal.classList.remove("open");
+    figureModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  const figuresSection = document.querySelector(".historical-figures-section");
+  if (figuresSection) {
+    figuresSection.addEventListener("click", (e) => {
+      const card = e.target.closest(".figure-card");
+      if (card) openFigureModal(card.dataset.figureId);
+    });
+
+    figuresSection.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const card = e.target.closest(".figure-card");
+      if (card) {
+        e.preventDefault();
+        openFigureModal(card.dataset.figureId);
+      }
+    });
+  }
+
+  if (figureModal) {
+    figureModal.addEventListener("click", (e) => {
+      if (e.target === figureModal || e.target.closest(".figure-detail-close")) {
+        closeFigureModal();
+      }
+    });
+  }
+
   // Listeners for cards and nodes
   timelineContainer.addEventListener("click", (e) => {
     // If click is on add-button, prevent opening the card detail modal
@@ -256,8 +425,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Support ESC key to close modal
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("open")) {
+    if (e.key !== "Escape") return;
+    if (modal.classList.contains("open")) {
       closeModal();
+    }
+    if (figureModal && figureModal.classList.contains("open")) {
+      closeFigureModal();
     }
   });
 
@@ -290,6 +463,19 @@ document.addEventListener("DOMContentLoaded", () => {
     updateToggleIcon(isDark);
   });
 
+  const exploreBtn = document.getElementById("explore-btn");
+  if (exploreBtn) {
+    exploreBtn.addEventListener("click", () => {
+      document.body.classList.remove("intro-state");
+
+      // Recalculate the timeline after it becomes visible.
+      requestAnimationFrame(() => {
+        adjustTimelineLine();
+        updateTimelineLine();
+      });
+    });
+  }
+
   // -------- Sticker Quote Bubbles --------
   const marxQuotes = [
     "\"Lịch sử của mọi xã hội tồn tại từ trước đến nay là lịch sử của đấu tranh giai cấp.\"",
@@ -305,6 +491,22 @@ document.addEventListener("DOMContentLoaded", () => {
     "\"Tin tưởng là tốt, nhưng kiểm soát còn tốt hơn.\"",
     "\"Chủ nghĩa đế quốc là giai đoạn tột cùng của chủ nghĩa tư bản.\"",
     "\"Kẻ nào không làm việc, kẻ đó không được ăn.\""
+  ];
+
+  const engelsQuotes = [
+    "\"Một ounce hành động đáng giá hơn một tấn lý thuyết.\"",
+    "\"Tự do là sự nhận thức được cái tất yếu.\"",
+    "\"Lao động là điều kiện cơ bản đầu tiên của toàn bộ đời sống loài người.\"",
+    "\"Không thể tự do cho một dân tộc này mà lại áp bức một dân tộc khác.\"",
+    "\"Lịch sử không làm gì cả; chính con người mới là người làm ra lịch sử.\""
+  ];
+
+  const hoChiMinhQuotes = [
+    "\"Không có gì quý hơn độc lập, tự do.\"",
+    "\"Đoàn kết, đoàn kết, đại đoàn kết. Thành công, thành công, đại thành công.\"",
+    "\"Vì lợi ích mười năm trồng cây, vì lợi ích trăm năm trồng người.\"",
+    "\"Dân ta phải biết sử ta, cho tường gốc tích nước nhà Việt Nam.\"",
+    "\"Nước Việt Nam là một, dân tộc Việt Nam là một.\""
   ];
 
   function showQuoteBubble(stickerEl, quotes) {
@@ -338,6 +540,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelector(".lenin-sticker").addEventListener("click", function () {
     showQuoteBubble(this, leninQuotes);
+  });
+
+  document.querySelector(".engels-sticker").addEventListener("click", function () {
+    showQuoteBubble(this, engelsQuotes);
+  });
+
+  document.querySelector(".ho-chi-minh-sticker").addEventListener("click", function () {
+    showQuoteBubble(this, hoChiMinhQuotes);
   });
 
   // Plus/Minus button click handlers
@@ -695,4 +905,3 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", updateScrollProgress);
   updateScrollProgress();
 });
-
