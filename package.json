@@ -1,0 +1,13 @@
+{
+  "name": "mln121-hanh-trinh-lich-su",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page timeline lịch sử với đối thoại nhân vật bằng AI.",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check api/chat.js && node --check app.js && node --check data.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

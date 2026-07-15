@@ -3,6 +3,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("detail-modal");
   const modalContent = document.getElementById("modal-content");
   const figureModal = document.getElementById("figure-detail-modal");
+  const characterChatModal = document.getElementById("character-chat-modal");
+  const characterChatMessages = document.getElementById("character-chat-messages");
+  const characterChatForm = document.getElementById("character-chat-form");
+  const characterChatInput = document.getElementById("character-chat-input");
+  const characterChatSend = document.getElementById("character-chat-send");
+  const characterChatHistory = new Map();
+  let activeChatCharacterId = null;
+  let chatRequestPending = false;
+  let chatCooldownRemaining = 0;
+  let chatCooldownTimer = null;
   
   // -------- Study Cart (State & Drag & Drop) --------
   const studyList = new Set(JSON.parse(localStorage.getItem("studyList") || "[]"));
@@ -401,6 +411,13 @@ document.addEventListener("DOMContentLoaded", () => {
           <h2 class="figure-detail-title" id="figure-detail-title">${figure.name}</h2>
           <p class="figure-detail-role">${figure.role}</p>
           <p class="figure-detail-summary">${figure.summary}</p>
+          <div class="figure-detail-actions">
+            <button class="figure-chat-launch" type="button" data-chat-id="${id}">
+              Trò chuyện cùng ${figure.name}
+              <span aria-hidden="true">→</span>
+            </button>
+            <span>Mô phỏng giáo dục bằng AI</span>
+          </div>
         </div>
       </div>
 
@@ -435,6 +452,159 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = "";
   }
 
+  function getCharacterHistory(id) {
+    if (!characterChatHistory.has(id)) {
+      const figure = historicalFigures[id];
+      characterChatHistory.set(id, [
+        {
+          role: "assistant",
+          content: `Xin chào. Đây là cuộc đối thoại mô phỏng nhằm tìm hiểu về ${figure.name}. Bạn muốn bắt đầu từ tư tưởng, tác phẩm hay một dấu mốc lịch sử?`
+        }
+      ]);
+    }
+    return characterChatHistory.get(id);
+  }
+
+  function renderCharacterChat() {
+    if (!characterChatMessages || !activeChatCharacterId) return;
+
+    const history = getCharacterHistory(activeChatCharacterId);
+    characterChatMessages.replaceChildren();
+
+    history.forEach((message) => {
+      const bubble = document.createElement("div");
+      bubble.className = `character-chat-message ${message.role}`;
+
+      const label = document.createElement("span");
+      label.className = "character-chat-message-label";
+      label.textContent = message.role === "user" ? "Bạn" : historicalFigures[activeChatCharacterId].name;
+
+      const content = document.createElement("p");
+      content.textContent = message.content;
+
+      bubble.append(label, content);
+      characterChatMessages.appendChild(bubble);
+    });
+
+    characterChatMessages.scrollTop = characterChatMessages.scrollHeight;
+  }
+
+  function openCharacterChat(id) {
+    const figure = historicalFigures[id];
+    if (!figure || !characterChatModal) return;
+
+    activeChatCharacterId = id;
+    document.getElementById("character-chat-title").textContent = figure.name;
+    document.getElementById("character-chat-role").textContent = figure.role;
+
+    const avatar = document.getElementById("character-chat-avatar");
+    avatar.src = figure.image;
+    avatar.alt = `Chân dung ${figure.name}`;
+
+    renderCharacterChat();
+    characterChatModal.classList.add("open");
+    characterChatModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    window.setTimeout(() => characterChatInput?.focus(), 180);
+  }
+
+  function closeCharacterChat() {
+    if (!characterChatModal) return;
+    characterChatModal.classList.remove("open");
+    characterChatModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  function setChatBusy(isBusy) {
+    chatRequestPending = isBusy;
+    updateChatControls();
+  }
+
+  function updateChatControls() {
+    const isLocked = chatRequestPending || chatCooldownRemaining > 0;
+    if (characterChatInput) characterChatInput.disabled = isLocked;
+    if (characterChatSend) {
+      characterChatSend.disabled = isLocked;
+      if (chatRequestPending) {
+        characterChatSend.innerHTML = '<span class="character-chat-loader" aria-hidden="true"></span><span>Đang trả lời</span>';
+      } else if (chatCooldownRemaining > 0) {
+        characterChatSend.textContent = `Chờ ${chatCooldownRemaining}s`;
+      } else {
+        characterChatSend.innerHTML = 'Gửi <span aria-hidden="true">→</span>';
+      }
+    }
+    characterChatModal?.querySelectorAll(".character-chat-suggestions button").forEach((button) => {
+      button.disabled = isLocked;
+    });
+  }
+
+  function startChatCooldown(seconds = 5) {
+    window.clearInterval(chatCooldownTimer);
+    const cooldownEndsAt = Date.now() + seconds * 1000;
+
+    const updateCountdown = () => {
+      chatCooldownRemaining = Math.max(0, Math.ceil((cooldownEndsAt - Date.now()) / 1000));
+      updateChatControls();
+
+      if (chatCooldownRemaining === 0) {
+        window.clearInterval(chatCooldownTimer);
+        chatCooldownTimer = null;
+        if (characterChatModal?.classList.contains("open")) characterChatInput?.focus();
+      }
+    };
+
+    updateCountdown();
+    chatCooldownTimer = window.setInterval(updateCountdown, 250);
+  }
+
+  function showChatError(message) {
+    if (!characterChatMessages) return;
+    characterChatMessages.querySelector(".character-chat-error")?.remove();
+
+    const error = document.createElement("p");
+    error.className = "character-chat-error";
+    error.textContent = message;
+    characterChatMessages.appendChild(error);
+    characterChatMessages.scrollTop = characterChatMessages.scrollHeight;
+  }
+
+  async function sendCharacterMessage(content) {
+    const text = content.trim();
+    if (!text || !activeChatCharacterId || chatRequestPending || chatCooldownRemaining > 0) return;
+
+    const characterId = activeChatCharacterId;
+    const history = getCharacterHistory(characterId);
+    history.push({ role: "user", content: text });
+    renderCharacterChat();
+    setChatBusy(true);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          characterId,
+          messages: history.slice(-10)
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Chưa thể nhận phản hồi từ AI.");
+
+      history.push({ role: "assistant", content: data.reply });
+      renderCharacterChat();
+      startChatCooldown(5);
+    } catch (error) {
+      showChatError(
+        error.message === "Failed to fetch"
+          ? "Không kết nối được server. Hãy chạy dự án bằng lệnh npm start thay vì mở trực tiếp index.html."
+          : error.message
+      );
+    } finally {
+      setChatBusy(false);
+      if (activeChatCharacterId === characterId && chatCooldownRemaining === 0) characterChatInput?.focus();
+    }
+  }
+
   const figuresSection = document.querySelector(".historical-figures-section");
   if (figuresSection) {
     figuresSection.addEventListener("click", (e) => {
@@ -454,9 +624,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (figureModal) {
     figureModal.addEventListener("click", (e) => {
+      const chatButton = e.target.closest(".figure-chat-launch");
+      if (chatButton) {
+        const characterId = chatButton.dataset.chatId;
+        closeFigureModal();
+        openCharacterChat(characterId);
+        return;
+      }
       if (e.target === figureModal || e.target.closest(".figure-detail-close")) {
         closeFigureModal();
       }
+    });
+  }
+
+  if (characterChatModal) {
+    characterChatModal.addEventListener("click", (e) => {
+      if (e.target === characterChatModal || e.target.closest(".character-chat-close")) {
+        closeCharacterChat();
+      }
+
+      const suggestion = e.target.closest(".character-chat-suggestions button");
+      if (suggestion) sendCharacterMessage(suggestion.dataset.question || "");
+    });
+  }
+
+  if (characterChatForm) {
+    characterChatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const message = characterChatInput.value;
+      characterChatInput.value = "";
+      characterChatInput.style.height = "auto";
+      sendCharacterMessage(message);
+    });
+  }
+
+  if (characterChatInput) {
+    characterChatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        characterChatForm?.requestSubmit();
+      }
+    });
+
+    characterChatInput.addEventListener("input", () => {
+      characterChatInput.style.height = "auto";
+      characterChatInput.style.height = `${Math.min(characterChatInput.scrollHeight, 120)}px`;
     });
   }
 
@@ -493,6 +705,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (figureModal && figureModal.classList.contains("open")) {
       closeFigureModal();
+    }
+    if (characterChatModal && characterChatModal.classList.contains("open")) {
+      closeCharacterChat();
     }
   });
 

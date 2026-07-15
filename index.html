@@ -119,6 +119,39 @@
     </div>
   </div>
 
+  <!-- AI Character Chat Modal -->
+  <div class="character-chat-modal" id="character-chat-modal" aria-hidden="true">
+    <div class="character-chat-panel" role="dialog" aria-modal="true" aria-labelledby="character-chat-title">
+      <header class="character-chat-header">
+        <img class="character-chat-avatar" id="character-chat-avatar" src="" alt="">
+        <div class="character-chat-heading">
+          <p>Đối thoại cùng lịch sử</p>
+          <h2 id="character-chat-title">Nhân vật lịch sử</h2>
+          <span id="character-chat-role"></span>
+        </div>
+        <button class="character-chat-close" type="button" aria-label="Đóng trò chuyện">&times;</button>
+      </header>
+
+      <div class="character-chat-notice">
+        Nội dung được AI mô phỏng phục vụ học tập, không phải phát ngôn thật của nhân vật.
+      </div>
+
+      <div class="character-chat-messages" id="character-chat-messages" role="log" aria-live="polite"></div>
+
+      <div class="character-chat-suggestions" aria-label="Câu hỏi gợi ý">
+        <button type="button" data-question="Tư tưởng trọng tâm của ông là gì?">Tư tưởng trọng tâm</button>
+        <button type="button" data-question="Sự kiện nào có ảnh hưởng lớn nhất đến tư tưởng của ông?">Dấu mốc quan trọng</button>
+        <button type="button" data-question="Hãy giải thích đóng góp của ông thật dễ hiểu.">Giải thích ngắn gọn</button>
+      </div>
+
+      <form class="character-chat-form" id="character-chat-form">
+        <label class="sr-only" for="character-chat-input">Nhập câu hỏi</label>
+        <textarea id="character-chat-input" rows="1" maxlength="1200" placeholder="Đặt câu hỏi về tư tưởng hoặc bối cảnh lịch sử..." required></textarea>
+        <button type="submit" id="character-chat-send">Gửi <span aria-hidden="true">→</span></button>
+      </form>
+    </div>
+  </div>
+
   <!-- Fullscreen Details Overlay Modal -->
   <div class="detail-modal" id="detail-modal">
     <div class="modal-content">
