@@ -72,11 +72,47 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initial update
   updateStudyBadge();
 
+  const timelineImageById = {
+    1: "1.jpg",
+    2: "2.jpg",
+    3: "3.jpg",
+    4: "4.png",
+    5: "5.jpg",
+    6: "6.jpg",
+    7: "7.jpg",
+    8: "8.jpg",
+    9: "9.jpg"
+  };
+
+  const timelineVideoById = {
+    1: "KAQRDpD0JwY",
+    2: "yhTHr65P7Jc",
+    3: "dvxWn3yUDXY",
+    4: "DkYqONro9UI",
+    5: "nkdukjVLef8",
+    6: "hLzQhVGIP0E",
+    7: "VdmXaquV7QA",
+    8: "hR8sdT-dU_c",
+    9: "oiztBU2NiZo"
+  };
+
+  function attachTimelineImage(imageEl, item) {
+    const localImage = timelineImageById[item.id];
+    let fallbackTried = false;
+    imageEl.addEventListener("error", () => {
+      if (!fallbackTried && item.image && localImage !== item.image) {
+        fallbackTried = true;
+        imageEl.src = item.image;
+      } else {
+        imageEl.closest(".timeline-card-image-wrap")?.classList.add("image-unavailable");
+      }
+    });
+    imageEl.src = localImage || item.image;
+  }
+
   // Render timeline elements dynamically from data.js
   function renderTimeline() {
-    timelineData.forEach((item, index) => {
-      const isOdd = index % 2 !== 0;
-      
+    timelineData.forEach((item) => {
       const itemElement = document.createElement("div");
       itemElement.className = "timeline-item scroll-animate";
       
@@ -89,21 +125,46 @@ document.addEventListener("DOMContentLoaded", () => {
       const btnText = isAdded ? "-" : "+";
       const btnTitle = isAdded ? "Xóa khỏi phần học tập" : "Thêm vào phần học tập";
       const btnClass = isAdded ? "card-add-btn added" : "card-add-btn";
+      const videoId = timelineVideoById[item.id];
       
       itemElement.innerHTML = `
         <div class="timeline-node" style="${nodeBorderStyle}" data-id="${item.id}">
           ${item.icon}
         </div>
-        <div class="timeline-card" style="${borderStyle}" data-id="${item.id}" draggable="true">
-          <div class="${btnClass}" data-id="${item.id}" title="${btnTitle}">${btnText}</div>
-          <span class="timeline-year" style="${yearBgStyle}">${item.year}</span>
-          <h3 class="timeline-title">${item.title}</h3>
-          <p class="timeline-desc">${item.shortDesc}</p>
-          <div class="timeline-tooltip">💡 Nhấp để xem chi tiết mốc lịch sử này!</div>
+        ${videoId ? `
+          <div class="timeline-video-panel">
+            <div class="timeline-video-label">
+              <span>Video tư liệu</span>
+              <span>Mốc ${item.id}</span>
+            </div>
+            <div class="timeline-video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/${videoId}"
+                title="Video tư liệu: ${item.title}"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        ` : ""}
+        <div class="timeline-card-shell">
+          <div class="timeline-card-image-wrap">
+            <img class="timeline-card-image" alt="Minh họa ${item.title}" loading="lazy">
+          </div>
+          <div class="timeline-card" style="${borderStyle}" data-id="${item.id}" draggable="true">
+            <div class="${btnClass}" data-id="${item.id}" title="${btnTitle}">${btnText}</div>
+            <span class="timeline-year" style="${yearBgStyle}">${item.year}</span>
+            <h3 class="timeline-title">${item.title}</h3>
+            <p class="timeline-desc">${item.shortDesc}</p>
+            <div class="timeline-tooltip">💡 Nhấp để xem chi tiết mốc lịch sử này!</div>
+          </div>
         </div>
       `;
       
       timelineContainer.appendChild(itemElement);
+      attachTimelineImage(itemElement.querySelector(".timeline-card-image"), item);
     });
   }
   
@@ -406,7 +467,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     
-    const card = e.target.closest(".timeline-card");
+    const shell = e.target.closest(".timeline-card-shell");
+    const card = e.target.closest(".timeline-card") || shell?.querySelector(".timeline-card");
     const node = e.target.closest(".timeline-node");
     
     if (card) {
