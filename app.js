@@ -297,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Karl Marx",
       period: "1818 — 1883",
       role: "Nhà triết học và kinh tế chính trị",
-      image: "marx_transparent.png",
+      image: "marx_stoicism.png",
       figureClass: "figure-marx",
       summary: "Karl Marx đặt nền móng cho việc phân tích có hệ thống về hàng hoá, lao động, giá trị, tư bản và giá trị thặng dư. Tư tưởng của ông trở thành cơ sở lý luận quan trọng để nghiên cứu các quy luật vận động của xã hội tư bản chủ nghĩa.",
       stats: [
@@ -318,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Friedrich Engels",
       period: "1820 — 1895",
       role: "Nhà tư tưởng và người đồng hành của Marx",
-      image: "engels_transparent.png",
+      image: "engels_stoicism.png",
       figureClass: "figure-engels",
       summary: "Friedrich Engels là cộng sự lý luận và người bạn đồng hành quan trọng nhất của Marx. Ông vừa đóng góp trực tiếp vào sự hình thành chủ nghĩa Marx, vừa bảo vệ, biên tập và phát triển nhiều công trình của Marx sau khi Marx qua đời.",
       stats: [
@@ -339,7 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Vladimir Lenin",
       period: "1870 — 1924",
       role: "Nhà lý luận và lãnh tụ cách mạng",
-      image: "lenin_transparent.png",
+      image: "lenin_stoicism.png",
       figureClass: "figure-lenin",
       summary: "Lenin phát triển chủ nghĩa Marx trong bối cảnh chủ nghĩa tư bản chuyển sang giai đoạn độc quyền và cạnh tranh giữa các đế quốc. Ông kết hợp nghiên cứu lý luận với tổ chức chính đảng và vận dụng sáng tạo vào cách mạng Nga.",
       stats: [
@@ -360,7 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Chủ tịch Hồ Chí Minh",
       period: "1890 — 1969",
       role: "Lãnh tụ cách mạng Việt Nam",
-      image: "ho-chi-minh_transparent.png",
+      image: "ho-chi-minh_stoicism.png",
       figureClass: "figure-ho-chi-minh",
       summary: "Chủ tịch Hồ Chí Minh tiếp thu và vận dụng sáng tạo chủ nghĩa Marx — Lenin vào điều kiện cụ thể của Việt Nam. Người kết hợp mục tiêu độc lập dân tộc với định hướng xã hội chủ nghĩa, đồng thời nhấn mạnh vai trò của nhân dân, đoàn kết và đạo đức cách mạng.",
       stats: [
